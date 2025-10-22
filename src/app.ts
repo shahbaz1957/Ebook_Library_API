@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import express from "express";
 import globalError from "./middlewares/globalErrorHandler.js";
+import userRouter from "./user/userRoute.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res, next) => {
 app.post("/", (req, res, next) => {
   res.send("Data Save Successfully !!!!! ");
 });
+app.use("/api/users", userRouter);
 
 // Global error
 
