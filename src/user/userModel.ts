@@ -1,5 +1,5 @@
-import mongoose,{ Model} from "mongoose";
-import type{ IUser } from "./userTypes.js";
+import mongoose, { Model } from "mongoose";
+import type { IUser } from "./userTypes.js";
 const userSchema = new mongoose.Schema<IUser>(
   {
     name: {
@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 // Model name ( Users because monogDb add s in last , User becomes Users)
-export default mongoose.model<IUser>("User", userSchema);
+// export default mongoose.model<IUser>("User", userSchema);
 
-// const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
-// export default User;
+const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", userSchema);
+export default User;

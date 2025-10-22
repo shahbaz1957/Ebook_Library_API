@@ -6,8 +6,7 @@ import jwt from "jsonwebtoken";
 
 import { config } from "../config/config.js";
 import type { IUser } from "./userTypes.js";
-import { PassThrough } from "stream";
-import { access } from "fs";
+
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;

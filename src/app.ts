@@ -3,6 +3,8 @@ import express from "express";
 import globalError from "./middlewares/globalErrorHandler.js";
 import userRouter from "./user/userRoute.js";
 import bookRouter from "./book/bookRoute.js";
+import uploadBookAssets from "./middlewares/multer.js";
+
 
 const app = express();
 
@@ -22,7 +24,7 @@ app.post("/", (req, res, next) => {
   res.send("Data Save Successfully !!!!! ");
 });
 app.use("/api/users", userRouter);
-app.use("/api", bookRouter);
+app.use("/api/books", uploadBookAssets,bookRouter);
 
 // Global error
 
