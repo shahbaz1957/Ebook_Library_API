@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 
 import { config } from "../config/config.js";
 import type { IUser } from "./userTypes.js";
+import { PassThrough } from "stream";
+import { access } from "fs";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;
@@ -57,6 +59,38 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const userLogin = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(createHttpError(400, "Email or Password is required ??"));
+  }
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return next(
+        createHttpError(400, "User Does not Exist. First Register ???")
+      );
+    }
+    //check User email password is match
+    const isUserMatched = await bcrypt.compare(password, user.password);
 
+    if (!isUserMatched) {
+      createHttpError(400, "Email or Password is not matched ???");
+    }
+    const token = jwt.sign({ sub: user._id }, config.Jwt_Secret as string, {
+      expiresIn: "7d",
+    });
 
-export { createUser };
+    return res.status(200).json({
+      email: user.email,
+      message: "User Found Successfully!!!",
+      accessToken:token,
+    });
+  } catch (error) {
+    return next(
+      createHttpError(400, "User Does not Exist. First Register ???")
+    );
+  }
+};
+
+export { createUser, userLogin };
