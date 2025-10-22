@@ -7,14 +7,16 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // route
 app.get("/", (req, res, next) => {
   const error = createHttpError(400, () => {
-    throw error;
+    return next(error);
   });
   res.json({ message: "Ebook Library API is running!" });
 });
+
 app.post("/", (req, res, next) => {
   res.send("Data Save Successfully !!!!! ");
 });
