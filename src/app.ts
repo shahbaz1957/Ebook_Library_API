@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import express from "express";
 import globalError from "./middlewares/globalErrorHandler.js";
 import userRouter from "./user/userRoute.js";
+import bookRouter from "./book/bookRoute.js";
 
 const app = express();
 
@@ -9,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// route
+// Here we Register All routes
 app.get("/", (req, res, next) => {
   const error = createHttpError(400, () => {
     return next(error);
@@ -21,6 +22,7 @@ app.post("/", (req, res, next) => {
   res.send("Data Save Successfully !!!!! ");
 });
 app.use("/api/users", userRouter);
+app.use("/api", bookRouter);
 
 // Global error
 
