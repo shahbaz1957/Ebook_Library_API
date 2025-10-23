@@ -3,8 +3,7 @@ import express from "express";
 import globalError from "./middlewares/globalErrorHandler.js";
 import userRouter from "./user/userRoute.js";
 import bookRouter from "./book/bookRoute.js";
-import uploadBookAssets from "./middlewares/multer.js";
-
+import type { Request, Response, NextFunction } from "express";
 
 const app = express();
 
@@ -13,18 +12,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Here we Register All routes
-app.get("/", (req, res, next) => {
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
   const error = createHttpError(400, () => {
     return next(error);
   });
   res.json({ message: "Ebook Library API is running!" });
 });
 
-app.post("/", (req, res, next) => {
+app.post("/", (req: Request, res: Response, next: NextFunction) => {
   res.send("Data Save Successfully !!!!! ");
 });
 app.use("/api/users", userRouter);
-app.use("/api/books", uploadBookAssets,bookRouter);
+app.use("/api/books", bookRouter);
 
 // Global error
 
