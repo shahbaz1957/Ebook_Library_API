@@ -1,16 +1,12 @@
+
 import { v2 as cloudinary } from "cloudinary";
-import createHttpError from "http-errors";
+import { config } from "./config.js";
 
-// Upload an image
+cloudinary.config({
+  cloud_name: config.cloud_name,
+  api_key: config.api_key,
+  api_secret: config.api_secret,
+});
 
-const uploadFileOnCloudinart = async (localFilePath: string) => {
-  try {
-    if (!localFilePath) {
-    //   return next(
-    //     createHttpError(400, "User Does not Exist. First Register ???")
-    //   );
-    }
-  } catch (error) {}
-};
 
-uploadFileOnCloudinart("/");
+export default cloudinary;

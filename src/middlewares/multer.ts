@@ -14,7 +14,6 @@ const fileUploader = multer({
   limits: { fileSize: 1.048576e7 },
 });
 
-
 const uploadBookAssets = fileUploader.fields([
   { name: "coverImage", maxCount: 1 },
   { name: "file", maxCount: 1 },
