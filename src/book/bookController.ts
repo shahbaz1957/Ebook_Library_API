@@ -4,10 +4,11 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs/promises"; // use promises for async FS
 import bookModel from "./bookModel.js";
-
+import type { AuthRequest } from "../middlewares/authenticate.js";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
+
   // console.log(req.files) // this help you to understand file structure
   const files = req.files as { [filename: string]: Express.Multer.File[] }; // this for typescript
   const __filename = fileURLToPath(import.meta.url);
@@ -77,14 +78,17 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   } catch (err) {
     console.warn("Failed to delete local PDF file:", err);
   }
+  const _req = req as AuthRequest;
+  //   console.log("userId ", _req.userId);
 
-    const newBook = await bookModel.create({
-      title,
-      genre,
-      author: "68f8a36bf839225c249df79d",
-      coverImage: uploadCoverResult?.secure_url,
-      file: uploadPDFResult?.secure_url,
-    });
+  // ----------Create Book--------
+  const newBook = await bookModel.create({
+    title,
+    genre,
+    author: _req.userId,
+    coverImage: uploadCoverResult?.secure_url,
+    file: uploadPDFResult?.secure_url,
+  });
 
   // ---------- Return combined response ----------
   return res.status(201).json({
@@ -104,7 +108,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
             publicId: uploadedFile.filename,
           }
         : { success: false, error: "Failed to upload PDF" },
-         newBookInfo: newBook
+      newBookInfo: newBook
         ? {
             success: true,
             id: newBook._id,
