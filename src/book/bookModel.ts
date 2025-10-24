@@ -28,5 +28,5 @@ const bookSchema = new Schema<IBook>(
 );
 
 const Book: Model<IBook> =
-  mongoose.models.User || mongoose.model<IBook>("Book", bookSchema);
+  mongoose.models.Book || mongoose.model<IBook>("Book", bookSchema);
 export default Book;
