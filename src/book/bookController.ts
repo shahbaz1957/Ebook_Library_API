@@ -5,7 +5,8 @@ import path from "node:path";
 import fs from "node:fs/promises"; // use promises for async FS
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-  const files = req.files as { [filename: string]: Express.Multer.File[] };
+    // console.log(req.files) // this help you to understand file structure 
+  const files = req.files as { [filename: string]: Express.Multer.File[] }; // this for typescript
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
