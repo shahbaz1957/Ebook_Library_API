@@ -118,4 +118,20 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export { createBook };
+// -------- single Book Get function ------------
+const singleBookGet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const _req = req as AuthRequest;
+  const userId = _req.params.userId;
+  const book = await bookModel.findById({ _id: userId });
+  //   console.log("Single Book Data",book);
+  return res.status(201).json({
+    message: "Single Book ",
+    bookInfo: book,
+    bookId: book?._id,
+  });
+};
+export { createBook, singleBookGet };
