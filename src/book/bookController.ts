@@ -5,6 +5,7 @@ import path from "node:path";
 import fs from "node:fs/promises"; // use promises for async FS
 import bookModel from "./bookModel.js";
 import type { AuthRequest } from "../middlewares/authenticate.js";
+import createHttpError from "http-errors";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
@@ -124,14 +125,33 @@ const singleBookGet = async (
   res: Response,
   next: NextFunction
 ) => {
-  const _req = req as AuthRequest;
-  const userId = _req.params.userId;
-  const book = await bookModel.findById({ _id: userId });
-  //   console.log("Single Book Data",book);
-  return res.status(201).json({
-    message: "Single Book ",
-    bookInfo: book,
-    bookId: book?._id,
-  });
+  try {
+    const _req = req as AuthRequest;
+    const userId = _req.params.userId;
+    const book = await bookModel.findById({ _id: userId });
+    //   console.log("Single Book Data",book);
+    return res.status(201).json({
+      message: "Single Book ",
+      bookInfo: book,
+      bookId: book?._id,
+    });
+  } catch (error) {
+    return next(createHttpError(500, "Book is not found "));
+  }
 };
-export { createBook, singleBookGet };
+
+const allBookGet = async (req: Request, res: Response, next: NextFunction) => {
+  // TODO find() return all docs of DB ,so it is not recomended
+  // used Pagination ( package -> mongoose pagination)
+  try {
+    const allBook = await bookModel.find();
+    // console.log("all book info ", allBook);
+    return res.status(202).json({
+      messsage: " All book data",
+      booksData: allBook,
+    });
+  } catch (error) {
+    next(createHttpError(500, "Error while getting all books"));
+  }
+};
+export { createBook, singleBookGet,allBookGet  };

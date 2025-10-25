@@ -1,5 +1,5 @@
 import express from "express";
-import { createBook, singleBookGet } from "./bookController.js";
+import { allBookGet, createBook, singleBookGet } from "./bookController.js";
 import uploadBookAssets from "../middlewares/multer.js";
 import authenticate from "../middlewares/authenticate.js";
 
@@ -7,4 +7,5 @@ const bookRouter = express.Router();
 
 bookRouter.post("/", authenticate, uploadBookAssets, createBook);
 bookRouter.get("/:userId", authenticate,singleBookGet)
+bookRouter.get("/", allBookGet)
 export default bookRouter;
