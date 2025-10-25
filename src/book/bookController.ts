@@ -139,7 +139,7 @@ const singleBookGet = async (
         return next(createHttpError(500, "Book is not found "));
     }
 };
-
+// get list of book
 const allBookGet = async (req: Request, res: Response, next: NextFunction) => {
     // TODO find() return all docs of DB ,so it is not recomended
     // used Pagination ( package -> mongoose pagination)
@@ -210,4 +210,133 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { createBook, singleBookGet, allBookGet, deleteBook };
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+    const { title, genre } = req.body || {};
+
+    if (!title || !genre) {
+        return next(createHttpError(400, "Missing title or genre"));
+    }
+    // Approach
+    // 1. check user can update
+    const bookId = req.params.bookId;
+    const book = await bookModel.findById({ _id: bookId });
+    // console.log("Book for update", book);
+    if (!book) {
+        next(createHttpError(404, "For update book is not found"));
+    }
+    // check user can delete
+    const _req = req as AuthRequest;
+    if (book?.author.toString() !== _req.userId) {
+        return next(createHttpError(403, "User not authorized to update book"));
+    }
+    // if Book exist then update on cloudinary first and then DB
+
+    let completeCoverImage;
+    const files = req.files as { [filename: string]: Express.Multer.File[] }; // this for typescript
+    if (files.coverImage) {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
+        // ---------- Cover Image Upload ----------
+        const cover = files.coverImage[0];
+        const coverPath = path.resolve(
+            __dirname,
+            "../../public/data/uploads",
+            cover.filename
+        );
+        const coverImageExt = cover.mimetype.split("/").at(-1);
+        const coverPublicId = cover.filename;
+
+        let uploadCoverResult = null;
+        try {
+            uploadCoverResult = await cloudinary.uploader.upload(coverPath, {
+                folder: "book-cover",
+                public_id: coverPublicId,
+                resource_type: "image",
+                overwrite: true,
+                use_filename: false,
+                unique_filename: false,
+                format: coverImageExt,
+            });
+        } catch (err) {
+            console.error("Cover upload failed:", err);
+        }
+        completeCoverImage = uploadCoverResult?.secure_url;
+
+        try {
+            await fs.unlink(coverPath);
+        } catch (err) {
+            console.warn("Failed to delete local cover file:", err);
+        }
+    }
+
+    let completefile;
+    if (files.file) {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        // ---------- PDF/File Upload ----------
+        const uploadedFile = files.file[0];
+        const originalExtension = path.extname(uploadedFile.originalname); // e.g., ".pdf"
+        const localFilePath = path.resolve(
+            __dirname,
+            "../../public/data/uploads",
+            uploadedFile.filename
+        );
+        const finalFilePath = localFilePath + originalExtension;
+
+        try {
+            await fs.rename(localFilePath, finalFilePath);
+        } catch (err) {
+            console.error("Failed to rename PDF file:", err);
+            return res
+                .status(500)
+                .json({ message: "Failed to process PDF file" });
+        }
+
+        let uploadPDFResult = null;
+        try {
+            uploadPDFResult = await cloudinary.uploader.upload(finalFilePath, {
+                folder: "book-pdfs",
+                public_id: uploadedFile.filename,
+                resource_type: "raw",
+            });
+        } catch (err) {
+            console.error("PDF upload failed:", err);
+        }
+        completefile = uploadPDFResult?.secure_url;
+
+        try {
+            await fs.unlink(finalFilePath);
+        } catch (err) {
+            console.warn("Failed to delete local PDF file:", err);
+        }
+    }
+
+    // now delete file and cover image form DB
+    const updateBookInDb = await bookModel.findByIdAndUpdate(
+        {_id:bookId},
+        {
+            title,
+            genre,
+            coverImage: completeCoverImage || book.coverImage,
+            file: completefile || book.file,
+        },
+        { new: true }
+    );
+    // console.log(updateBookInDb);
+    if (!updateBookInDb) {
+        return next(createHttpError(404, "Book not found while updating"));
+    }
+    return res.status(201).json({
+        message: "Book updated successfully",
+        data: {
+            _id: updateBookInDb._id,
+            title: updateBookInDb.title,
+            genre: updateBookInDb.genre,
+            coverImage: updateBookInDb.coverImage,
+            file: updateBookInDb.file,
+        },
+    });
+};
+
+export { createBook, singleBookGet, allBookGet, deleteBook, updateBook };
