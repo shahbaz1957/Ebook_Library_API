@@ -126,12 +126,12 @@ const singleBookGet = async (
   next: NextFunction
 ) => {
   try {
-    const _req = req as AuthRequest;
-    const userId = _req.params.userId;
+    // const _req = req as AuthRequest;
+    const userId = req.params.userId;
     const book = await bookModel.findById({ _id: userId });
     //   console.log("Single Book Data",book);
     return res.status(201).json({
-      message: "Single Book ",
+      message: "Single Book info ",
       bookInfo: book,
       bookId: book?._id,
     });
@@ -154,4 +154,4 @@ const allBookGet = async (req: Request, res: Response, next: NextFunction) => {
     next(createHttpError(500, "Error while getting all books"));
   }
 };
-export { createBook, singleBookGet,allBookGet  };
+export { createBook, singleBookGet, allBookGet };
