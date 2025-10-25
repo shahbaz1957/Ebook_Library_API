@@ -6,6 +6,7 @@ import authenticate from "../middlewares/authenticate.js";
 const bookRouter = express.Router();
 
 bookRouter.post("/", authenticate, uploadBookAssets, createBook);
-bookRouter.get("/:userId", authenticate,singleBookGet)
+bookRouter.get("/:bookId", authenticate,singleBookGet)
 bookRouter.get("/", allBookGet)
+
 export default bookRouter;

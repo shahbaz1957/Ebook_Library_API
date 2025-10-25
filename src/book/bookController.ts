@@ -127,8 +127,8 @@ const singleBookGet = async (
 ) => {
   try {
     // const _req = req as AuthRequest;
-    const userId = req.params.userId;
-    const book = await bookModel.findById({ _id: userId });
+    const bookId = req.params.bookId;
+    const book = await bookModel.findById({ _id: bookId });
     //   console.log("Single Book Data",book);
     return res.status(201).json({
       message: "Single Book info ",
