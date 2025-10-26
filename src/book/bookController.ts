@@ -163,8 +163,7 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
         return next(createHttpError(404, "Book not found"));
     }
 
-    // // check user can delete
-    // console.log(book);
+    // check user can delete
     const _req = req as AuthRequest;
     if (book?.author.toString() !== _req.userId) {
         return next(createHttpError(403, "User not authorized to delete book"));
@@ -229,7 +228,30 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     if (book?.author.toString() !== _req.userId) {
         return next(createHttpError(403, "User not authorized to update book"));
     }
-    // if Book exist then update on cloudinary first and then DB
+
+    // if Book exist then first delete and then update on cloudinary and then DB
+    const coverImageSplite = book?.coverImage.split("/");
+    const coverImagePublicId =
+        coverImageSplite?.at(-2) +
+        "/" +
+        coverImageSplite?.at(-1)?.split(".").at(-2);
+    const fileSpilte = book?.file.split("/");
+    const filePublicId = fileSpilte?.at(-2) + "/" + fileSpilte?.at(-1);
+
+    // delete cover & file from cloudinary
+    try {
+        await cloudinary.uploader.destroy(coverImagePublicId);
+        await cloudinary.uploader.destroy(filePublicId, {
+            resource_type: "raw",
+        });
+    } catch (error) {
+        return next(
+            createHttpError(
+                500,
+                "Error while delete cover & file from cloudinary"
+            )
+        );
+    }
 
     let completeCoverImage;
     const files = req.files as { [filename: string]: Express.Multer.File[] }; // this for typescript
@@ -314,7 +336,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 
     // now delete file and cover image form DB
     const updateBookInDb = await bookModel.findByIdAndUpdate(
-        {_id:bookId},
+        { _id: bookId },
         {
             title,
             genre,
