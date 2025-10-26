@@ -11,14 +11,6 @@
       "src": "/(.*)",
       "dest": "server.ts"
     }
-  ],
-  "env": {
-"PORT":"5050",
-"NODE_ENV":"production",
-"JWT_SECRET":"zxdfguiowerfghjyhb;lkjhgfbjhtdf",
-"MONGO_URI_STRING:mongodb":"mongodb+srv://shahbaz:Shahdb1957@cluster0.1gzpokc.mongodb.net/ebook_lib",
-"CLOUDINARY_CLOUD_NAME":"dbras8fib",
-"CLOUDINARY_API_KEY":"477221731949239",
-"CLOUDINARY_API_SECRET":"dxnrPFwrA1wL55R_f39BFSc9UeQ"
-}
+  ]
+
 }
