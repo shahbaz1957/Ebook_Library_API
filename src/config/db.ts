@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { config } from "./config.js";
 
-let isConnected = false; // track connection status
+let isConnected = false; // track connection
 
 const dbConnection = async () => {
   if (isConnected) {
@@ -10,10 +10,9 @@ const dbConnection = async () => {
   }
 
   try {
-    // Listen only once for connection events
     mongoose.connection.once("connected", () => {
       isConnected = true;
-      console.log("✅👌 Db Connect Successfully !!!");
+      console.log("✅👌 Db Connected Successfully!");
     });
 
     mongoose.connection.once("error", (err) => {
@@ -21,10 +20,9 @@ const dbConnection = async () => {
     });
 
     await mongoose.connect(config.DB_URL as string);
-
   } catch (error) {
     console.error("❌ Db Connection failed:", error);
-    process.exit(1);
+    throw error; // let caller handle the error
   }
 };
 

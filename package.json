@@ -10,7 +10,7 @@
     "dev": "nodemon",
     "build": "tsc -p tsconfig.build.json",
     "start": "node --enable-source-maps dist/server.js",
-    "vercel-start ":"node server.ts"
+    "vercel-start ": "node server.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
@@ -23,6 +23,7 @@
     "@types/mongoose": "^5.11.96",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.9.1",
+    "@vercel/node": "^5.5.0",
     "eslint": "^9.38.0",
     "globals": "^16.4.0",
     "nodemon": "^3.1.10",
