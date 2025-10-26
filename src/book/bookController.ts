@@ -130,11 +130,7 @@ const singleBookGet = async (
         const bookId = req.params.bookId;
         const book = await bookModel.findById({ _id: bookId });
         //   console.log("Single Book Data",book);
-        return res.status(201).json({
-            message: "Single Book info ",
-            bookInfo: book,
-            bookId: book?._id,
-        });
+        return res.status(201).json(book);
     } catch (error) {
         return next(createHttpError(500, "Book is not found "));
     }

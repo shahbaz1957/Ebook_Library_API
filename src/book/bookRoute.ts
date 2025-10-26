@@ -12,7 +12,7 @@ import authenticate from "../middlewares/authenticate.js";
 const bookRouter = express.Router();
 
 bookRouter.post("/", authenticate, uploadBookAssets, createBook);
-bookRouter.get("/:bookId", authenticate, singleBookGet);
+bookRouter.get("/:bookId", singleBookGet);
 bookRouter.get("/", allBookGet);
 bookRouter.delete("/:bookId", authenticate, deleteBook);
 bookRouter.patch("/:bookId", authenticate, uploadBookAssets, updateBook);
